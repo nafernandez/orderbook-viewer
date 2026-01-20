@@ -1,21 +1,20 @@
-import { getExchangeInfo } from '@/lib/binance';
+'use client';
 
-export default async function Home() {
-  const exchangeInfo = await getExchangeInfo();
+import { useState } from 'react';
+import { AssetSelector } from '@/components/AssetSelector';
+
+export default function Home() {
+  const [symbol, setSymbol] = useState<string | null>(null);
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="text-center space-y-2">
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Orderbook data
-        </p>
+    <main className="container mx-auto px-4 py-8 space-y-4">
+      <AssetSelector onChange={setSymbol} />
+
+      {symbol && (
         <p className="text-sm text-zinc-500">
-          Exchange timezone: {exchangeInfo.timezone}
+          Selected pair: {symbol}
         </p>
-        <p className="text-sm text-zinc-500">
-          Symbols loaded: {exchangeInfo.symbols.length}
-        </p>
-      </div>
+      )}
     </main>
   );
 }
