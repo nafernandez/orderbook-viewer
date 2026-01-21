@@ -1,12 +1,42 @@
 export interface OrderLevel {
   price: number;
   qty: number;
+  total: number;
+}
+
+export interface SpreadData {
+  spread: number;
+  spreadPercent: number;
+  midPrice: number;
 }
 
 export function parseOrderbookLevels(levels: [string, string][]): OrderLevel[] {
-  return levels.map(([price, qty]) => ({
-    price: Number(price),
-    qty: Number(qty),
-  }));
+  let cumulative = 0;
+  return levels.map(([price, qty]) => {
+    cumulative += Number(qty);
+    return {
+      price: Number(price),
+      qty: Number(qty),
+      total: cumulative,
+    };
+  });
+}
+
+export function calculateSpread(bids: OrderLevel[], asks: OrderLevel[]): SpreadData | null {
+  if (bids.length === 0 || asks.length === 0) {
+    return null;
+  }
+  
+  const bestBid = bids[0].price;
+  const bestAsk = asks[0].price;
+  const spread = bestAsk - bestBid;
+  const midPrice = (bestBid + bestAsk) / 2;
+  const spreadPercent = (spread / midPrice) * 100;
+  
+  return {
+    spread,
+    spreadPercent,
+    midPrice,
+  };
 }
 

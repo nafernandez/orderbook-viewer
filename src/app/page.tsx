@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { AssetSelector } from '@/components/AssetSelector';
 import { OrderbookTable } from '@/components/OrderbookTable';
-import { SpreadIndicator } from '@/components/SpreadIndicator';
 import { useOrderbook } from '@/hooks/useOrderbook';
+import { calculateSpread } from '@/lib/orderbook';
 
 export default function Home() {
   const [symbol, setSymbol] = useState<string | null>(null);
@@ -13,51 +13,63 @@ export default function Home() {
     10
   );
 
-  return (
-    <main className="container mx-auto px-4 py-8 space-y-4">
-      <AssetSelector onChange={setSymbol} />
+  const spreadData = useMemo(() => calculateSpread(bids, asks), [bids, asks]);
 
-      {symbol && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-zinc-500">Selected pair: {symbol}</p>
-          {isUpdating && (
-            <p className="text-xs text-blue-400 animate-pulse">
-              Updating…
-            </p>
+  return (
+    <main className="min-h-screen bg-zinc-950">
+      <header className="border-b border-zinc-800 bg-zinc-900 px-4 py-4">
+        <div className="container mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="font-semibold text-zinc-100">Orderbook Viewer</h1>
+            <AssetSelector onChange={setSymbol} />
+          </div>
+
+          {symbol && (
+            <div className="flex items-center gap-2">
+              <span className={`h-2 w-2 rounded-full ${
+                isUpdating ? 'bg-blue-500 animate-pulse' : 'bg-green-500'
+              }`} />
+              <span className="text-xs text-zinc-400">
+                {isUpdating ? 'Updating...' : 'Connected'}
+              </span>
+            </div>
           )}
         </div>
-      )}
-
-      {error && (
-        <div className="bg-red-950 border border-red-800 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-red-400">Error</p>
-              <p className="text-xs text-red-300 mt-1">{error}</p>
+      </header>
+      <div className="container mx-auto px-4 py-8">
+        {error && (
+          <div className="bg-red-950 border border-red-800 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-red-400">Error</p>
+                <p className="text-xs text-red-300 mt-1">{error}</p>
+              </div>
+              <button
+                onClick={retry}
+                className="px-4 py-2 bg-red-800 hover:bg-red-700 text-white text-sm font-medium rounded transition-colors"
+              >
+                Retry
+              </button>
             </div>
-            <button
-              onClick={retry}
-              className="px-4 py-2 bg-red-800 hover:bg-red-700 text-white text-sm font-medium rounded transition-colors"
-            >
-              Retry
-            </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center space-y-2">
-            <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-sm text-zinc-500">Loading orderbook…</p>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center space-y-2">
+              <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p className="text-sm text-zinc-500">Loading orderbook…</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        <>
-          <SpreadIndicator bids={bids} asks={asks} />
-          <OrderbookTable bids={bids} asks={asks} />
-        </>
-      )}
+        ) : (
+          <OrderbookTable 
+            bids={bids} 
+            asks={asks} 
+            spreadData={spreadData}
+            symbol={symbol}
+          />
+        )}
+      </div>
     </main>
   );
 }

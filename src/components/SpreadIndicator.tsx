@@ -1,23 +1,33 @@
-import { OrderLevel } from '@/lib/orderbook';
+import { type SpreadData } from '@/lib/orderbook';
 import { formatPrice } from '@/lib/format';
 
 interface SpreadIndicatorProps {
-  bids: OrderLevel[];
-  asks: OrderLevel[];
+  spreadData: SpreadData | null;
 }
 
-export function SpreadIndicator({ bids, asks }: SpreadIndicatorProps) {
-  const bestBid = bids[0]?.price;
-  const bestAsk = asks[0]?.price;
-  const spread = bestBid && bestAsk ? bestAsk - bestBid : null;
+export function SpreadIndicator({ spreadData }: SpreadIndicatorProps) {
+  if (!spreadData) {
+    return (
+      <div className="bg-zinc-900 border-y border-zinc-700 py-3 px-4">
+        <div className="flex items-center justify-center">
+          <span className="text-sm text-zinc-500">—</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-gradient-to-r from-zinc-900 to-zinc-800 border border-zinc-700 rounded-lg p-3 shadow-md">
-      <div className="flex items-center justify-center gap-2">
-        <span className="text-xs text-zinc-400 font-medium">Spread:</span>
-        <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-          {spread !== null ? formatPrice(spread) : '—'}
-        </span>
+    <div className="bg-zinc-900 border-y border-zinc-700 py-3 px-4">
+      <div className="flex items-center justify-center gap-4 flex-wrap">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-zinc-400">Spread:</span>
+          <span className="font-mono text-sm font-medium text-zinc-100">
+            {formatPrice(spreadData.spread)}
+          </span>
+          <span className="text-xs text-zinc-500">
+            ({spreadData.spreadPercent.toFixed(4)}%)
+          </span>
+        </div>
       </div>
     </div>
   );

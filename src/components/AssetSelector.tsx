@@ -7,8 +7,13 @@ interface AssetSelectorProps {
   onChange: (symbol: string) => void;
 }
 
+interface SymbolInfo {
+  symbol: string;
+  displayName: string;
+}
+
 export function AssetSelector({ onChange }: AssetSelectorProps) {
-  const [symbols, setSymbols] = useState<string[]>([]);
+  const [symbols, setSymbols] = useState<SymbolInfo[]>([]);
   const [selectedSymbol, setSelectedSymbol] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,14 +26,17 @@ export function AssetSelector({ onChange }: AssetSelectorProps) {
       const exchangeInfo = await getExchangeInfo();
       
       const tradingSymbols = exchangeInfo.symbols
-        .filter(s => s.status === 'TRADING' && s.quoteAsset === 'USDT')
+        .filter(s => s.status === 'TRADING')
         .slice(0, 5)
-        .map(s => s.symbol);
+        .map(s => ({
+          symbol: s.symbol,
+          displayName: `${s.baseAsset}/${s.quoteAsset}`
+        }));
 
       setSymbols(tradingSymbols);
       
       if (tradingSymbols.length > 0) {
-        setSelectedSymbol(tradingSymbols[0]);
+        setSelectedSymbol(tradingSymbols[0].symbol);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar los pares de trading');
@@ -53,14 +61,11 @@ export function AssetSelector({ onChange }: AssetSelectorProps) {
 
   if (error) {
     return (
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-red-600">
-          Trading pair
-        </label>
-        <div className="text-sm text-red-600">{error}</div>
+      <div className="flex items-center gap-2">
+        <div className="text-sm text-red-400">{error}</div>
         <button
           onClick={fetchSymbols}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-1.5 text-xs font-medium text-white bg-red-700 rounded hover:bg-red-600 transition-colors"
         >
           Retry
         </button>
@@ -69,27 +74,22 @@ export function AssetSelector({ onChange }: AssetSelectorProps) {
   }
 
   return (
-    <div className="space-y-2">
-      <label htmlFor="asset-selector" className="block text-sm font-medium text-gray-700">
-        Trading pair
-      </label>
-      <select
-        id="asset-selector"
-        value={selectedSymbol}
-        onChange={handleChange}
-        disabled={isLoading}
-        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-      >
-        {isLoading ? (
-          <option>Loading pairs…</option>
-        ) : (
-          symbols.map((symbol) => (
-            <option key={symbol} value={symbol}>
-              {symbol}
-            </option>
-          ))
-        )}
-      </select>
-    </div>
+    <select
+      id="asset-selector"
+      value={selectedSymbol}
+      onChange={handleChange}
+      disabled={isLoading}
+      className="px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-zinc-800/50 disabled:cursor-not-allowed hover:bg-zinc-700 transition-colors"
+    >
+      {isLoading ? (
+        <option>Loading pairs…</option>
+      ) : (
+        symbols.map((symbolInfo) => (
+          <option key={symbolInfo.symbol} value={symbolInfo.symbol} className="bg-zinc-800">
+            {symbolInfo.displayName}
+          </option>
+        ))
+      )}
+    </select>
   );
 }
