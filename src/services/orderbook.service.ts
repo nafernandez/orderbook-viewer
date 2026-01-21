@@ -1,14 +1,4 @@
-export interface OrderLevel {
-  price: number;
-  qty: number;
-  total: number;
-}
-
-export interface SpreadData {
-  spread: number;
-  spreadPercent: number;
-  midPrice: number;
-}
+import type { OrderLevel, SpreadData } from '@/types';
 
 export function parseOrderbookLevels(levels: [string, string][]): OrderLevel[] {
   let cumulative = 0;
@@ -39,4 +29,3 @@ export function calculateSpread(bids: OrderLevel[], asks: OrderLevel[]): SpreadD
     midPrice,
   };
 }
-

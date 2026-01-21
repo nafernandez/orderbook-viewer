@@ -3,8 +3,9 @@
 import { useState, useMemo } from 'react';
 import { AssetSelector } from '@/components/AssetSelector';
 import { OrderbookTable } from '@/components/OrderbookTable';
-import { useOrderbook } from '@/hooks/useOrderbook';
-import { calculateSpread } from '@/lib/orderbook';
+import { OrderbookSkeleton } from '@/components/SkeletonLoader';
+import { useOrderbook } from '@/hooks';
+import { calculateSpread } from '@/services';
 
 export default function Home() {
   const [symbol, setSymbol] = useState<string | null>(null);
@@ -55,12 +56,7 @@ export default function Home() {
         )}
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center space-y-2">
-              <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="text-sm text-zinc-500">Loading orderbook…</p>
-            </div>
-          </div>
+          <OrderbookSkeleton />
         ) : (
           <OrderbookTable 
             bids={bids} 

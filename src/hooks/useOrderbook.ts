@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { getDepth } from '@/lib/binance';
-import { parseOrderbookLevels, type OrderLevel } from '@/lib/orderbook';
+import { getDepth } from '@/services';
+import { parseOrderbookLevels } from '@/services';
+import { OrderLevel } from '@/types';
 
 export function useOrderbook(symbol: string | null, limit = 10) {
   const [bids, setBids] = useState<OrderLevel[]>([]);
@@ -57,7 +58,7 @@ export function useOrderbook(symbol: string | null, limit = 10) {
     asks,
     error,
     retry,
-    isLoading: isFetching && !hasData,
-    isUpdating: isFetching && hasData,
+    isLoading: !symbol || (isFetching && !hasData),
+    isUpdating: symbol ? isFetching && hasData : false,
   };
 }

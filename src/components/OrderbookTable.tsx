@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { OrderLevel, SpreadData } from '@/lib/orderbook';
-import { getPriceDecimals, getQuantityDecimals } from '@/lib/format';
+import type { OrderLevel, SpreadData } from '@/types';
+import { getPriceDecimals, getQuantityDecimals } from '@/utils';
 import { OrderBookRow } from './OrderBookRow';
 import { SpreadIndicator } from './SpreadIndicator';
 

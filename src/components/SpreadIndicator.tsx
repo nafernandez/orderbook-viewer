@@ -1,5 +1,5 @@
-import { type SpreadData } from '@/lib/orderbook';
-import { formatPrice } from '@/lib/format';
+import type { SpreadData } from '@/types';
+import { formatPrice } from '@/utils';
 
 interface SpreadIndicatorProps {
   spreadData: SpreadData | null;

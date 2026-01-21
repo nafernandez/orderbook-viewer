@@ -1,4 +1,4 @@
-import { OrderLevel } from '@/lib/orderbook';
+import type { OrderLevel } from '@/types';
 
 interface OrderBookRowProps {
   entry: OrderLevel;
