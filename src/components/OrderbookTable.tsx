@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { OrderLevel } from '@/lib/orderbook';
 import { formatPrice, formatQty } from '@/lib/format';
 
@@ -7,16 +8,41 @@ interface OrderbookTableProps {
 }
 
 export function OrderbookTable({ bids, asks }: OrderbookTableProps) {
-  const renderRows = (levels: OrderLevel[]) => {
+  const maxQty = useMemo(() => {
+    const allQtys = [
+      ...bids.slice(0, 10).map(level => level?.qty || 0),
+      ...asks.slice(0, 10).map(level => level?.qty || 0),
+    ];
+    return Math.max(...allQtys, 1);
+  }, [bids, asks]);
+
+  const renderRows = (levels: OrderLevel[], side: 'bid' | 'ask') => {
     const rows = [];
+    
     for (let i = 0; i < 10; i++) {
       const level = levels[i];
+      const widthPercent = level && maxQty > 0 ? (level.qty / maxQty) * 100 : 0;
+      
       rows.push(
-        <tr key={level ? level.price : `empty-${i}`} className="h-8">
-          <td className="px-3 py-1 text-sm font-mono tabular-nums text-right">
+        <tr key={level ? level.price : `empty-${i}`} className="h-8 relative">
+          {widthPercent > 0 && (
+            <td 
+              className="absolute inset-0 pointer-events-none"
+              colSpan={2}
+            >
+              <div 
+                className={`h-full ${side === 'bid' ? 'bg-green-500/10' : 'bg-red-500/10'}`}
+                style={{ 
+                  width: `${widthPercent}%`,
+                  float: 'right'
+                }}
+              />
+            </td>
+          )}
+          <td className="px-3 py-1 text-sm font-mono tabular-nums text-right relative z-10">
             {level ? formatPrice(level.price) : '—'}
           </td>
-          <td className="px-3 py-1 text-sm font-mono tabular-nums text-right">
+          <td className="px-3 py-1 text-sm font-mono tabular-nums text-right relative z-10">
             {level ? formatQty(level.qty) : '—'}
           </td>
         </tr>
@@ -43,7 +69,7 @@ export function OrderbookTable({ bids, asks }: OrderbookTableProps) {
             </tr>
           </thead>
           <tbody className="text-green-500">
-            {renderRows(bids)}
+            {renderRows(bids, 'bid')}
           </tbody>
         </table>
       </div>
@@ -63,7 +89,7 @@ export function OrderbookTable({ bids, asks }: OrderbookTableProps) {
             </tr>
           </thead>
           <tbody className="text-red-500">
-            {renderRows(asks)}
+            {renderRows(asks, 'ask')}
           </tbody>
         </table>
       </div>
