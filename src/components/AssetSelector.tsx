@@ -9,19 +9,17 @@ export function AssetSelector({ onChange }: AssetSelectorProps) {
   const [symbols, setSymbols] = useState<SymbolInfo[]>([]);
   const [selectedSymbol, setSelectedSymbol] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchSymbols = async () => {
     setIsLoading(true);
-    setError(null);
 
     try {
       const exchangeInfo = await getExchangeInfo();
       
       const tradingSymbols = exchangeInfo.symbols
-      // Only include symbols that are currently active and available for trading
+        // Only include symbols that are currently active and available for trading
         .filter((s: BinanceSymbol) => s.status === 'TRADING')
-        .slice(0, 5)
+        .slice(0, 6)
         .map((s: BinanceSymbol) => ({
           symbol: s.symbol,
           displayName: `${s.baseAsset}/${s.quoteAsset}`
@@ -33,7 +31,7 @@ export function AssetSelector({ onChange }: AssetSelectorProps) {
         setSelectedSymbol(tradingSymbols[0].symbol);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar los pares de trading');
+      console.error('Error inesperado al cargar símbolos:', err);
     } finally {
       setIsLoading(false);
     }
@@ -55,20 +53,6 @@ export function AssetSelector({ onChange }: AssetSelectorProps) {
 
   if (isLoading) {
     return <DropdownSkeleton />;
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center gap-2">
-        <div className="text-sm text-red-400">{error}</div>
-        <button
-          onClick={fetchSymbols}
-          className="px-3 py-1.5 text-xs font-medium text-white bg-red-700 rounded hover:bg-red-600 transition-colors"
-        >
-          Retry
-        </button>
-      </div>
-    );
   }
 
   return (

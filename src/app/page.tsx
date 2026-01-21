@@ -9,7 +9,7 @@ import { calculateSpread } from '@/services';
 
 export default function Home() {
   const [symbol, setSymbol] = useState<string | null>(null);
-  const { bids, asks, isLoading, isUpdating, error, retry } = useOrderbook(
+  const { bids, asks, isLoading, error, retry } = useOrderbook(
     symbol,
     10
   );
@@ -24,17 +24,6 @@ export default function Home() {
             <h1 className="font-semibold text-zinc-100">Orderbook Viewer</h1>
             <AssetSelector onChange={setSymbol} />
           </div>
-
-          {symbol && (
-            <div className="flex items-center gap-2">
-              <span className={`h-2 w-2 rounded-full ${
-                isUpdating ? 'bg-blue-500 animate-pulse' : 'bg-green-500'
-              }`} />
-              <span className="text-xs text-zinc-400">
-                {isUpdating ? 'Updating...' : 'Connected'}
-              </span>
-            </div>
-          )}
         </div>
       </header>
       <div className="container mx-auto px-4 py-8">
