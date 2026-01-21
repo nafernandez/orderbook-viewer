@@ -37,11 +37,12 @@ export async function getExchangeInfo(): Promise<ExchangeInfo> {
 
 export async function getDepth(
   symbol: string,
-  limit: number = 100
+  limit: number = 100,
+  signal?: AbortSignal
 ): Promise<DepthResponse> {
   const url = `${BINANCE_API_BASE}/api/v3/depth?symbol=${symbol}&limit=${limit}`;
   
-  const response = await fetch(url);
+  const response = await fetch(url, { signal });
   
   if (!response.ok) {
     const errorText = await response.text();

@@ -3,46 +3,57 @@
 import { useState } from 'react';
 import { AssetSelector } from '@/components/AssetSelector';
 import { OrderbookTable } from '@/components/OrderbookTable';
-
-const mockBids = [
-  { price: 42995, qty: 0.31 },
-  { price: 42990, qty: 0.18 },
-  { price: 42985, qty: 0.52 },
-  { price: 42980, qty: 0.09 },
-  { price: 42975, qty: 0.41 },
-  { price: 42970, qty: 0.27 },
-  { price: 42965, qty: 0.63 },
-  { price: 42960, qty: 0.14 },
-  { price: 42955, qty: 0.36 },
-  { price: 42950, qty: 0.22 },
-];
-
-const mockAsks = [
-  { price: 43005, qty: 0.19 },
-  { price: 43010, qty: 0.44 },
-  { price: 43015, qty: 0.08 },
-  { price: 43020, qty: 0.57 },
-  { price: 43025, qty: 0.33 },
-  { price: 43030, qty: 0.12 },
-  { price: 43035, qty: 0.61 },
-  { price: 43040, qty: 0.26 },
-  { price: 43045, qty: 0.49 },
-  { price: 43050, qty: 0.17 },
-];
+import { useOrderbook } from '@/hooks/useOrderbook';
 
 export default function Home() {
   const [symbol, setSymbol] = useState<string | null>(null);
+  const { bids, asks, isLoading, isUpdating, error, retry } = useOrderbook(
+    symbol,
+    10
+  );
 
   return (
     <main className="container mx-auto px-4 py-8 space-y-4">
       <AssetSelector onChange={setSymbol} />
 
       {symbol && (
-        <p className="text-sm text-zinc-500">
-          Selected pair: {symbol}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-zinc-500">Selected pair: {symbol}</p>
+          {isUpdating && (
+            <p className="text-xs text-blue-400 animate-pulse">
+              Updating…
+            </p>
+          )}
+        </div>
       )}
-      <OrderbookTable bids={mockBids} asks={mockAsks} />
+
+      {error && (
+        <div className="bg-red-950 border border-red-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-red-400">Error</p>
+              <p className="text-xs text-red-300 mt-1">{error}</p>
+            </div>
+            <button
+              onClick={retry}
+              className="px-4 py-2 bg-red-800 hover:bg-red-700 text-white text-sm font-medium rounded transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center space-y-2">
+            <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-sm text-zinc-500">Loading orderbook…</p>
+          </div>
+        </div>
+      ) : (
+        <OrderbookTable bids={bids} asks={asks} />
+      )}
     </main>
   );
 }

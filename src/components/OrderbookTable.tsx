@@ -1,4 +1,4 @@
-export type OrderLevel = { price: number; qty: number };
+import { OrderLevel } from '@/lib/orderbook';
 
 interface OrderbookTableProps {
   bids: OrderLevel[];
