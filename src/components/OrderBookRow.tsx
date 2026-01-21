@@ -21,8 +21,8 @@ export function OrderBookRow({
   return (
     <div className="relative group">
       <div
-        className={`absolute inset-y-0 transition-all duration-150 ${
-          isBid ? 'right-0 bg-green-500/10' : 'left-0 bg-red-500/10'
+        className={`absolute inset-y-0 transition-all duration-150 right-0 ${
+          isBid ? ' bg-green-500/10' : 'bg-red-500/10'
         }`}
         style={{ width: `${Math.min(depthPercent, 100)}%` }}
       />
