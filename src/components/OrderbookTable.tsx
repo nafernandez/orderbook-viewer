@@ -1,4 +1,5 @@
 import { OrderLevel } from '@/lib/orderbook';
+import { formatPrice, formatQty } from '@/lib/format';
 
 interface OrderbookTableProps {
   bids: OrderLevel[];
@@ -13,10 +14,10 @@ export function OrderbookTable({ bids, asks }: OrderbookTableProps) {
       rows.push(
         <tr key={level ? level.price : `empty-${i}`} className="h-8">
           <td className="px-3 py-1 text-sm font-mono tabular-nums text-right">
-            {level ? level.price.toFixed(2) : '—'}
+            {level ? formatPrice(level.price) : '—'}
           </td>
           <td className="px-3 py-1 text-sm font-mono tabular-nums text-right">
-            {level ? level.qty.toFixed(4) : '—'}
+            {level ? formatQty(level.qty) : '—'}
           </td>
         </tr>
       );
