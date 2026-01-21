@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AssetSelector } from '@/components/AssetSelector';
 import { OrderbookTable } from '@/components/OrderbookTable';
+import { SpreadIndicator } from '@/components/SpreadIndicator';
 import { useOrderbook } from '@/hooks/useOrderbook';
 
 export default function Home() {
@@ -52,7 +53,10 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <OrderbookTable bids={bids} asks={asks} />
+        <>
+          <SpreadIndicator bids={bids} asks={asks} />
+          <OrderbookTable bids={bids} asks={asks} />
+        </>
       )}
     </main>
   );
