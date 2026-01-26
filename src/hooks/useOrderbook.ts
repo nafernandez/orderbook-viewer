@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { getDepth } from '@/services';
 import { OrderLevel } from '@/types';
+import { useErrorToast } from '@/provider/ErrorToastProvider';
 import { useBinanceDepth, DepthUpdateEvent } from './useBinanceDepth';
 
 interface OrderbookState {
@@ -16,6 +17,7 @@ export function useOrderbook(symbol: string | null, limit = 10) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const { showError } = useErrorToast();
 
   const orderbookStateRef = useRef<OrderbookState>({
     bids: new Map(),
@@ -235,7 +237,7 @@ export function useOrderbook(symbol: string | null, limit = 10) {
           if (firstEvent.U <= snapshot.lastUpdateId + 1 && firstEvent.u >= snapshot.lastUpdateId + 1) {
             for (const event of validEvents) {
               if (event.U > lastUpdateIdRef.current + 1) {
-                console.warn('⚠️ Gap en buffer, descartando eventos restantes');
+                console.warn(' Gap en buffer, descartando eventos restantes');
                 break;
               }
               
@@ -277,6 +279,7 @@ export function useOrderbook(symbol: string | null, limit = 10) {
       } catch (e) {
         if (isSubscribed) {
           setError(e instanceof Error ? e.message : 'Error desconocido');
+          showError();
           setIsLoading(false);
         }
       }
@@ -288,17 +291,16 @@ export function useOrderbook(symbol: string | null, limit = 10) {
       isSubscribed = false;
     };
   }, [symbol, retryCount, updateVisualState]);
-
-  function retry() {
+  
+  function dismissError() {
     setError(null);
-    setRetryCount((c) => c + 1);
   }
 
   return {
     bids,
     asks,
     error,
-    retry,
+    dismissError,
     isLoading: !symbol || isLoading,
     isUpdating: false,
   };

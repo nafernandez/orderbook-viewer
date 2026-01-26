@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ErrorToastProvider } from "@/provider/ErrorToastProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,12 +28,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="border-b border-zinc-200 dark:border-zinc-800">
-          <div className="container mx-auto px-4 py-4">
-            <h1 className="text-2xl font-bold">Orderbook Viewer</h1>
-          </div>
-        </header>
-        {children}
+        <ErrorToastProvider>
+          <header className="border-b border-zinc-200 dark:border-zinc-800">
+            <div className="container mx-auto px-4 py-4">
+              <h1 className="text-2xl font-bold">Orderbook Viewer</h1>
+            </div>
+          </header>
+          {children}
+        </ErrorToastProvider>
       </body>
     </html>
   );

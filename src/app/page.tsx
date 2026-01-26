@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { AssetSelector } from '@/components/AssetSelector';
 import { OrderbookTable } from '@/components/OrderbookTable';
 import { OrderbookSkeleton } from '@/components/SkeletonLoader';
@@ -9,11 +9,10 @@ import { calculateSpread } from '@/services';
 
 export default function Home() {
   const [symbol, setSymbol] = useState<string | null>(null);
-  const { bids, asks, isLoading, error, retry } = useOrderbook(
+  const { bids, asks, isLoading } = useOrderbook(
     symbol,
     10
   );
-
   const spreadData = useMemo(() => {
     if (!symbol) return null;
     
@@ -31,23 +30,6 @@ export default function Home() {
         </div>
       </header>
       <div className="container mx-auto px-4 py-8">
-        {error && (
-          <div className="bg-red-950 border border-red-800 rounded-lg p-4 mb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-red-400">Error</p>
-                <p className="text-xs text-red-300 mt-1">{error}</p>
-              </div>
-              <button
-                onClick={retry}
-                className="px-4 py-2 bg-red-800 hover:bg-red-700 text-white text-sm font-medium rounded transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          </div>
-        )}
-
         {isLoading ? (
           <OrderbookSkeleton />
         ) : (
