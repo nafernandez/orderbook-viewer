@@ -1,18 +1,8 @@
 'use client';
 
+import { DepthUpdateEvent } from '@/types';
 import { useWebSocket } from './useWebSocket';
-
-export interface DepthUpdateEvent {
-  e: string;
-  E: number;
-  s: string;
-  U: number;
-  u: number;
-  pu?: number;
-  b: [string, string][];
-  a: [string, string][];
-}
-
+ 
 interface UseBinanceDepthOptions {
   updateSpeed?: '100ms' | '1000ms';
   onUpdate: (data: DepthUpdateEvent) => void;
@@ -25,6 +15,7 @@ export function useBinanceDepth(
 ) {
   const { updateSpeed = '1000ms', onUpdate, onError } = options;
 
+  //TODO: move to env var
   const url = symbol
     ? `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth@${updateSpeed}`
     : null;

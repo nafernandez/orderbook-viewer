@@ -16,3 +16,14 @@ export interface DepthResponse {
   bids: [string, string][];
   asks: [string, string][];
 }
+
+export interface DepthUpdateEvent {
+  e: string;
+  E: number;
+  s: string;
+  U: number;
+  u: number;
+  pu?: number;
+  b: [string, string][];
+  a: [string, string][];
+}

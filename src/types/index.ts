@@ -2,6 +2,7 @@ export type {
   BinanceSymbol,
   ExchangeInfo,
   DepthResponse,
+  DepthUpdateEvent,
 } from './binance';
 
 export type {
