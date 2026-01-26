@@ -271,7 +271,6 @@ export function useOrderbook(symbol: string | null, limit = 10) {
 
         isInitializedRef.current = true;
         isResyncingRef.current = false;
-        console.log('✅ Orderbook listo\n');
         
         setError(null);
         setIsLoading(false);
@@ -295,14 +294,12 @@ export function useOrderbook(symbol: string | null, limit = 10) {
     setRetryCount((c) => c + 1);
   }
 
-  const hasData = bids.length > 0 || asks.length > 0;
-
   return {
     bids,
     asks,
     error,
     retry,
-    isLoading: !symbol || (isLoading && !hasData),
+    isLoading: !symbol || isLoading,
     isUpdating: false,
   };
 }
