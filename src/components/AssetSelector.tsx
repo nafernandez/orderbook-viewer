@@ -10,40 +10,37 @@ export function AssetSelector({ onChange }: AssetSelectorProps) {
   const [selectedSymbol, setSelectedSymbol] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchSymbols = async () => {
-    setIsLoading(true);
+  useEffect(() => {
+    const loadSymbols = async () => {
+      setIsLoading(true);
 
-    try {
-      const exchangeInfo = await getExchangeInfo();
-      
-      const tradingSymbols = exchangeInfo.symbols
-        // Only include symbols that are currently active and available for trading
-        .filter((s: BinanceSymbol) => s.status === 'TRADING')
-        .slice(0, 6)
-        .map((s: BinanceSymbol) => ({
-          symbol: s.symbol,
-          displayName: `${s.baseAsset}/${s.quoteAsset}`
-        }));
+      try {
+        const exchangeInfo = await getExchangeInfo();
+        
+        const tradingSymbols = exchangeInfo.symbols
+          .filter((s: BinanceSymbol) => s.status === 'TRADING' && s.quoteAsset === 'USDT')
+          .slice(0, 6)
+          .map((s: BinanceSymbol) => ({
+            symbol: s.symbol,
+            displayName: `${s.baseAsset}/${s.quoteAsset}`
+          }));
 
-      setSymbols(tradingSymbols);
-      
-      if (tradingSymbols.length > 0) {
-        setSelectedSymbol(tradingSymbols[0].symbol);
+        setSymbols(tradingSymbols);
+        
+        if (tradingSymbols.length > 0) {
+          const initialSymbol = tradingSymbols[0].symbol;
+          setSelectedSymbol(initialSymbol);
+          onChange(initialSymbol);
+        }
+      } catch (err) {
+        console.error('Error inesperado al cargar símbolos:', err);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error('Error inesperado al cargar símbolos:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchSymbols();
-  }, []);
-
-  useEffect(() => {
-    if (selectedSymbol) onChange(selectedSymbol);
-  }, [selectedSymbol, onChange]);
+    loadSymbols();
+  }, [onChange]);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newSymbol = event.target.value;

@@ -15,7 +15,7 @@ export function OrderBookRow({
   priceDecimals,
   quantityDecimals,
 }: OrderBookRowProps) {
-  const depthPercent = (entry.total / maxTotal) * 100;
+  const depthPercent = (entry.depth / maxTotal) * 100;
   const isBid = type === 'bid';
 
   return (
@@ -34,7 +34,7 @@ export function OrderBookRow({
           {entry.qty.toFixed(quantityDecimals)}
         </span>
         <span className="text-right text-zinc-400">
-          {entry.total.toFixed(quantityDecimals)}
+          {entry.total.toFixed(2)}
         </span>
       </div>
     </div>

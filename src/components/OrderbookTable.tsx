@@ -12,11 +12,13 @@ interface OrderbookTableProps {
 }
 
 export function OrderbookTable({ bids, asks, spreadData, symbol }: OrderbookTableProps) {
-  const maxTotal = useMemo(() => {
-    const maxBidTotal = bids.length > 0 ? Math.max(...bids.map((b) => b.total)) : 1;
-    const maxAskTotal = asks.length > 0 ? Math.max(...asks.map((a) => a.total)) : 1;
-    return Math.max(maxBidTotal, maxAskTotal);
-  }, [bids, asks]);
+  const maxBidDepth = useMemo(() => {
+    return bids.length > 0 ? bids[bids.length - 1].depth : 1;
+  }, [bids]);
+
+  const maxAskDepth = useMemo(() => {
+    return asks.length > 0 ? asks[asks.length - 1].depth : 1;
+  }, [asks]);
 
   const samplePrice = asks[0]?.price || bids[0]?.price || 1;
   const priceDecimals = getPriceDecimals(samplePrice);
@@ -44,7 +46,7 @@ export function OrderbookTable({ bids, asks, spreadData, symbol }: OrderbookTabl
           <OrderBookRow
             key={`ask-${entry.price}-${index}`}
             entry={entry}
-            maxTotal={maxTotal}
+            maxTotal={maxAskDepth}
             type="ask"
             priceDecimals={priceDecimals}
             quantityDecimals={quantityDecimals}
@@ -57,7 +59,7 @@ export function OrderbookTable({ bids, asks, spreadData, symbol }: OrderbookTabl
           <OrderBookRow
             key={`bid-${entry.price}-${index}`}
             entry={entry}
-            maxTotal={maxTotal}
+            maxTotal={maxBidDepth}
             type="bid"
             priceDecimals={priceDecimals}
             quantityDecimals={quantityDecimals}

@@ -14,7 +14,11 @@ export default function Home() {
     10
   );
 
-  const spreadData = useMemo(() => calculateSpread(bids, asks), [bids, asks]);
+  const spreadData = useMemo(() => {
+    if (!symbol) return null;
+    
+    return calculateSpread(bids, asks);
+  }, [bids, asks, symbol]);
 
   return (
     <main className="min-h-screen bg-zinc-950">
