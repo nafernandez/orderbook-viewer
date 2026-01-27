@@ -7,13 +7,19 @@ interface UseBinanceDepthOptions {
   updateSpeed?: '100ms' | '1000ms';
   onUpdate: (data: DepthUpdateEvent) => void;
   onError?: (error: Event) => void;
+  restartToken?: number;
 }
 
 export function useBinanceDepth(
   symbol: string | null,
   options: UseBinanceDepthOptions
 ) {
-  const { updateSpeed = '1000ms', onUpdate, onError } = options;
+  const {
+    updateSpeed = '1000ms',
+    onUpdate,
+    onError,
+    restartToken = 0,
+  } = options;
 
   //TODO: move to env var
   const url = symbol
@@ -25,5 +31,6 @@ export function useBinanceDepth(
     reconnectAttempts: 5,
     reconnectInterval: 1000,
     onError,
+    restartToken,
   });
 }

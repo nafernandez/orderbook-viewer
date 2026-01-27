@@ -13,6 +13,7 @@ export function useOrderbook(symbol: string | null, limit = 10) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [connectionRestartToken, setConnectionRestartToken] = useState(0);
   const { showError } = useErrorToast();
 
   const engineRef = useRef<OrderBookEngine | null>(null);
@@ -36,7 +37,15 @@ export function useOrderbook(symbol: string | null, limit = 10) {
   }, [limit]);
 
   const handleGap = useCallback(() => {
+    if (isResyncingRef.current) {
+      return;
+    }
+
     isResyncingRef.current = true;
+    isInitializedRef.current = false;
+    eventBufferRef.current = [];
+    engineRef.current?.reset();
+    setConnectionRestartToken((token) => token + 1);
     setRetryCount((c) => c + 1);
   }, []);
 
@@ -74,6 +83,7 @@ export function useOrderbook(symbol: string | null, limit = 10) {
     updateSpeed: '1000ms',
     onUpdate: handleDepthUpdate,
     onError: () => setError('Error de conexion WebSocket'),
+    restartToken: connectionRestartToken,
   });
 
   useEffect(() => {
@@ -119,11 +129,15 @@ export function useOrderbook(symbol: string | null, limit = 10) {
         const maxWaitTime = 2000;
         const startTime = Date.now();
 
-        while (
-          eventBufferRef.current.length === 0 &&
-          Date.now() - startTime < maxWaitTime
-        ) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
+        const shouldWaitForBuffer = !isResync;
+
+        if (shouldWaitForBuffer) {
+          while (
+            eventBufferRef.current.length === 0 &&
+            Date.now() - startTime < maxWaitTime
+          ) {
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
         }
 
         const snapshot = await getDepth(currentSymbol, 100);

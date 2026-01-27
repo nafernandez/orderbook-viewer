@@ -9,6 +9,7 @@ interface UseWebSocketOptions {
   reconnect?: boolean;
   reconnectAttempts?: number;
   reconnectInterval?: number;
+  restartToken?: number;
 }
 
 export function useWebSocket<T = unknown>(
@@ -23,6 +24,7 @@ export function useWebSocket<T = unknown>(
     reconnect = true,
     reconnectAttempts = 5,
     reconnectInterval = 1000,
+    restartToken = 0,
   } = options;
 
   const wsRef = useRef<WebSocket | null>(null);
@@ -126,7 +128,7 @@ export function useWebSocket<T = unknown>(
         wsRef.current = null;
       }
     };
-  }, [url, reconnect, reconnectAttempts, reconnectInterval]);
+  }, [url, reconnect, reconnectAttempts, reconnectInterval, restartToken]);
 
   return {
     isConnected,
