@@ -47,3 +47,6 @@ https://orderbook-viewer-psi.vercel.app/
 
 ## Tests
 - `npm test` (Vitest) — 2 files and 8 tests pass. Coverage includes `tests/orderbook/OrderBookEngine.test.ts` and `tests/hooks/useOrderbook.test.tsx` with cases for buffering, gaps/resync, and snapshot errors.
+
+## Notes
+- **Console warning on WebSocket close**: You may see `WebSocket connection to '...' failed: Ping received after close` in the browser console when unmounting components or switching symbols. This is expected behavior—it happens when Binance sends a keepalive ping after the client has already closed the connection. It's harmless and doesn't affect functionality.
