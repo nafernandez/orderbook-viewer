@@ -6,7 +6,7 @@ interface ToastProps {
 }
 
 const DEFAULT_ERROR_MESSAGE =
-  'Ocurrió un error. Podés seguir navegando mientras lo resolvemos.';
+  'An error occurred. You can keep browsing while we fix it.';
 
 export function Toast({ isOpen, onClose }: ToastProps) {
   if (!isOpen) return null;
@@ -23,9 +23,9 @@ export function Toast({ isOpen, onClose }: ToastProps) {
         <button
           onClick={onClose}
           className="rounded-md border border-red-700 px-2 py-1 text-xs font-medium text-red-100 transition-colors hover:bg-red-900"
-          aria-label="Cerrar notificación"
+          aria-label="Close notification"
         >
-          Cerrar
+          Close
         </button>
       </div>
     </div>
